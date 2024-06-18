@@ -42,15 +42,15 @@ describe("duckDbLoader loader", () => {
     const fn = await loader("FAKE PATH");
     assertSpyCall(queryStub, 0);
     assertSpyCallArg(loadFileStub, 0, 0, "FAKE PATH");
-    assertEquals(typeof fn, 'function');
+    assertEquals(typeof fn, "function");
   });
 
   it("should pass params down", async () => {
     using _loadFileStub = stub(fakeQuery, "loadFile");
-    using runStub = stub(fakeQuery, 'run');
+    using runStub = stub(fakeQuery, "run");
     using _queryStub = stub(_internals, "Query", returnsNext([fakeQuery]));
     const fn = await loader("FAKE PATH") as (...params: unknown[]) => unknown;
-    fn('FAKE PARAMS');
-    assertSpyCallArg(runStub, 0, 0, 'FAKE PARAMS');
-  })
+    fn("FAKE PARAMS");
+    assertSpyCallArg(runStub, 0, 0, "FAKE PARAMS");
+  });
 });

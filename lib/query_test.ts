@@ -1,8 +1,9 @@
 import { assertEquals, assertObjectMatch, assertThrows } from "@std/assert";
-import { beforeEach, describe, it } from "@std/testing/bdd";
+import { afterEach, beforeEach, describe, it } from "@std/testing/bdd";
 import { assertSpyCallArg, resolvesNext, spy, stub } from "@std/testing/mock";
 import { type Database, open } from "../deps/duckdb.ts";
 import { _internals, Query } from "./query.ts";
+import { DiffResult } from "jsr:@std/internal@^1.0.0/types";
 
 describe("Query", () => {
   let query: Query;
@@ -27,19 +28,61 @@ describe("Query", () => {
   describe("#run", () => {
     beforeEach(() => {
       query = new Query(fakeDb);
-      query.sql = "FAKE SQL";
     });
 
     it("should throw an error if called before setting SQL", () => {
-      query = new Query(fakeDb);
       assertThrows(() => query.run());
     });
 
     it("should run simple queries", () => {
+      query.sql = "FAKE SQL";
       using runSpy = spy(query, "run");
       const res = query.run();
       assertEquals(res, fakeResult);
       assertSpyCallArg(runSpy, 0, 0, undefined);
+    });
+  });
+
+  describe("#run (actual queries)", () => {
+    let db: Database;
+    let query: Query;
+    beforeEach(() => {
+      db = open(":memory:");
+      query = new Query(db);
+    });
+
+    afterEach(() => {
+      db.close();
+    });
+
+    it("should run simple queries", () => {
+      query.sql = "SELECT 1 AS number";
+      const res = query.run();
+      assertObjectMatch(res[0], { number: 1 });
+    });
+
+    it("should support autoincrementing parameters", () => {
+      query.sql = "SELECT ?::INTEGER AS number;";
+      const res = query.run(2);
+      assertObjectMatch(res[0], { number: 2 });
+    });
+
+    it("should support multiple autoincrementing parameters", () => {
+      query.sql = "SELECT ?::INTEGER AS number, ?::STRING AS string;";
+      const res = query.run(3, "TEST");
+      assertObjectMatch(res[0], { number: 3, string: "TEST" });
+    });
+
+    it("should support positional parameters", () => {
+      query.sql = "SELECT $2::INTEGER AS number, $1::STRING AS string;";
+      const res = query.run("TEST", 3);
+      assertObjectMatch(res[0], { number: 3, string: "TEST" });
+    });
+
+    it.skip("should support named parameters", () => {
+      query.sql = "SELECT $n::INTEGER AS number, $s::STRING AS string;";
+      const res = query.run({ n: "TEST", s: 4 });
+      assertObjectMatch(res[0], { number: 4, string: "TEST" });
     });
   });
 });

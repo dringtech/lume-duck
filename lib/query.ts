@@ -44,12 +44,12 @@ export class Query {
    * @param params Parameters to pass to query
    * @returns Array of results
    */
-  run<T = Record<string, unknown>>(...params: T[]) {
+  run<T = Record<string, unknown>>(...params: unknown[]) {
     if (!this._sql) throw new ReferenceError("SQL statement not set");
 
     const connection = this.db.connect();
     const prepared = connection.prepare(this._sql);
-    const result = prepared.query<T>(...params);
+    const result = prepared.query(...params);
     connection.close();
     return result;
   }

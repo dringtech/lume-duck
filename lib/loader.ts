@@ -56,4 +56,4 @@ export function duckDbLoader(options: DuckDbLoaderOptions = {}) {
 export const _internals = {
   open,
   Query,
-}
+};
