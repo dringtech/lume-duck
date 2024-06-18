@@ -1,4 +1,5 @@
-import { type Database } from "../deps/duckdb.ts";
+import type { Database } from "../deps/duckdb.ts";
+import type { columnTypes } from "./types.d.ts";
 
 /**
  * Class which manages loading SQL from strings or files and executing with params.
@@ -44,7 +45,7 @@ export class Query {
    * @param params Parameters to pass to query
    * @returns Array of results
    */
-  run<T = Record<string, unknown>>(...params: unknown[]) {
+  run<T = Record<string, columnTypes>>(...params: columnTypes[]) {
     if (!this._sql) throw new ReferenceError("SQL statement not set");
 
     const connection = this.db.connect();

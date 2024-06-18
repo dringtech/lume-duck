@@ -1,3 +1,5 @@
+import type { columnTypes } from "../lib/types.d.ts";
+
 export { open } from "jsr:@divy/duckdb@0.2.1";
 
 // Needed as @divy/duckdb doesn't export types! GRRR!
@@ -16,5 +18,5 @@ type Connection = {
 };
 
 type PreparedStatement = {
-  query<T = Record<string, unknown>>(...params: unknown[]): T[];
+  query<T = Record<string, columnTypes>>(...params: columnTypes[]): T[];
 };

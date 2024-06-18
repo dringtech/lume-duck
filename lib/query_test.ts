@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, it } from "@std/testing/bdd";
 import { assertSpyCallArg, resolvesNext, spy, stub } from "@std/testing/mock";
 import { type Database, open } from "../deps/duckdb.ts";
 import { _internals, Query } from "./query.ts";
-import { DiffResult } from "jsr:@std/internal@^1.0.0/types";
 
 describe("Query", () => {
   let query: Query;
@@ -79,11 +78,11 @@ describe("Query", () => {
       assertObjectMatch(res[0], { number: 3, string: "TEST" });
     });
 
-    it.skip("should support named parameters", () => {
-      query.sql = "SELECT $n::INTEGER AS number, $s::STRING AS string;";
-      const res = query.run({ n: "TEST", s: 4 });
-      assertObjectMatch(res[0], { number: 4, string: "TEST" });
-    });
+    // it.skip("should support named parameters", () => {
+    //   query.sql = "SELECT $n::INTEGER AS number, $s::STRING AS string;";
+    //   const res = query.run({ n: "TEST", s: 4 });
+    //   assertObjectMatch(res[0], { number: 4, string: "TEST" });
+    // });
   });
 });
 

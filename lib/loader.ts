@@ -1,5 +1,6 @@
 import { open } from "../deps/duckdb.ts";
 import { Query } from "./query.ts";
+import type { columnTypes } from "./types.d.ts";
 
 /** DuckDB Loader configuration. */
 interface DuckDbLoaderConfig {
@@ -9,6 +10,10 @@ interface DuckDbLoaderConfig {
 
 /** DuckDB Loader options - all parameters optional version of {@linkcode DuckDbLoaderConfig}. */
 export type DuckDbLoaderOptions = Partial<DuckDbLoaderConfig>;
+
+type Loader = (
+  path: string,
+) => Promise<(...params: columnTypes[]) => Record<string, columnTypes>[]>;
 
 /**
  * Factory which generates a DuckDb loader.
@@ -36,7 +41,7 @@ export type DuckDbLoaderOptions = Partial<DuckDbLoaderConfig>;
  * @param options Configuration for factory
  * @returns DuckDB Loader
  */
-export function duckDbLoader(options: DuckDbLoaderOptions = {}) {
+export function duckDbLoader(options: DuckDbLoaderOptions = {}): Loader {
   const config: DuckDbLoaderConfig = {
     dbPath: ":memory:",
     ...options,
@@ -47,7 +52,7 @@ export function duckDbLoader(options: DuckDbLoaderOptions = {}) {
   const loader = async (path: string) => {
     const query = new _internals.Query(db);
     await query.loadFile(path);
-    return (...params: unknown[]) => query.run(...params);
+    return (...params: columnTypes[]) => query.run(...params);
   };
 
   return loader;

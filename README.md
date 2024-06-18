@@ -3,7 +3,8 @@
 > [DuckDB](https://duckdb.org) data in [Lume](https://lume.land)
 
 You will need to have the appropriate DuckDB library installed for your system!
-See https://duckdb.org/docs/installation/index?version=stable&environment=cplusplus
+See
+https://duckdb.org/docs/installation/index?version=stable&environment=cplusplus
 
 ## Quick start
 
@@ -21,9 +22,9 @@ file name is a function which executes the contained SQL, i.e.
 
 Examples (each assumes in a file called `_data/query.sql`):
 
-| SQL                            | Query    | Result         |
-| ------------------------------ | -------- | -------------- |
-| `SELECT 1 AS number;`          | `query()`  | `[{number:1}]` |
-| `SELECT ?::INTEGER AS number;` | `query(2)` | `[{number:2}]` |
-| `SELECT ?::INTEGER AS number, ?::STRING AS string;` | `query(3, 'x')` | `[{number:3,string:'x'}]`|
-| `SELECT $2::INTEGER AS number, $1::STRING AS string;` | `query('y', 4)` | `[{number:4,string:'y'}]`|
+| SQL                                                   | Query           | Result                    |
+| ----------------------------------------------------- | --------------- | ------------------------- |
+| `SELECT 1 AS number;`                                 | `query()`       | `[{number:1}]`            |
+| `SELECT ?::INTEGER AS number;`                        | `query(2)`      | `[{number:2}]`            |
+| `SELECT ?::INTEGER AS number, ?::STRING AS string;`   | `query(3, 'x')` | `[{number:3,string:'x'}]` |
+| `SELECT $2::INTEGER AS number, $1::STRING AS string;` | `query('y', 4)` | `[{number:4,string:'y'}]` |

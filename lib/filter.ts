@@ -1,12 +1,12 @@
 import { transpose } from "./utils.ts";
+import type { columnTypes } from "./types.d.ts";
 
-type columnTypes = number | string;
 /**
  * Lume filter function to
  * @param results Array of DuckDB query results
  * @returns
  */
-export function resultTable(results: Record<string, columnTypes>[]) {
+export function resultTable(results: Record<string, columnTypes>[]): string {
   if (results.length < 1) {
     return `<pre>${
       [
