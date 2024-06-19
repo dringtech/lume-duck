@@ -1,6 +1,6 @@
 {
   "name": "@dringtech/lume-duck",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "exports": "./mod.ts",
   "tasks": {
     "test": "deno test --coverage --allow-env --allow-read --unstable-ffi --allow-ffi",
