@@ -1,0 +1,5 @@
+scripts:
+  check:
+    cmd:
+      - deno lint
+      - deno fmt
