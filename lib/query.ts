@@ -10,6 +10,7 @@ import type { columnTypes } from "./types.d.ts";
  */
 export class Query {
   #connection: Connection;
+  #sql: string | undefined;
   #prepared: PreparedStatement | undefined;
 
   /**
@@ -32,7 +33,15 @@ export class Query {
       this.#prepared.close();
       this.#prepared = undefined;
     }
-    this.#prepared = this.#connection.prepare(sql);
+    this.#sql = sql;
+    this.#prepared = this.#connection.prepare(this.#sql);
+  }
+
+  public get sql(): string {
+    if (!this.#sql) {
+      return "NO SQL LOADED";
+    }
+    return this.#sql;
   }
 
   /**
@@ -54,7 +63,7 @@ export class Query {
    * @param params Parameters to pass to query
    * @returns Array of results
    */
-  run<T = Record<string, columnTypes>>(...params: columnTypes[]) {
+  run<T = Record<string, columnTypes>>(...params: columnTypes[]): T[] {
     if (!this.#prepared) throw new ReferenceError("SQL statement not set");
     return this.#prepared.query(...params);
   }

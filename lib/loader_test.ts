@@ -1,5 +1,5 @@
 import { beforeEach, describe, it } from "@std/testing/bdd";
-import { _internals, duckDbLoader } from "./loader.ts";
+import { _internals, duckDbLoader, type Loader } from "./loader.ts";
 import {
   assertSpyCall,
   assertSpyCallArg,
@@ -24,11 +24,14 @@ describe("duckDbLoader factory", () => {
 });
 
 describe("duckDbLoader loader", () => {
-  let loader: (path: string) => unknown;
+  let loader: Loader;
   const fakeQuery = {
     async loadFile() {},
     run<T>(): T[] {
       return [];
+    },
+    get sql() {
+      return "FAKE SQL";
     },
   };
 
@@ -49,8 +52,16 @@ describe("duckDbLoader loader", () => {
     using _loadFileStub = stub(fakeQuery, "loadFile");
     using runStub = stub(fakeQuery, "run");
     using _queryStub = stub(_internals, "Query", returnsNext([fakeQuery]));
-    const fn = await loader("FAKE PATH") as (...params: unknown[]) => unknown;
+    const fn = await loader("FAKE PATH");
     fn("FAKE PARAMS");
     assertSpyCallArg(runStub, 0, 0, "FAKE PARAMS");
+  });
+
+  it("should return the sql string if called as a string", async () => {
+    // using _loadFileStub = stub(fakeQuery, "loadFile");
+    using _queryStub = stub(_internals, "Query", returnsNext([fakeQuery]));
+    const fn = await loader("FAKE PATH");
+    assertEquals(fn.toString(), "FAKE SQL");
+    assertEquals(`${fn}`, "FAKE SQL");
   });
 });

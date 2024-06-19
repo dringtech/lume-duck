@@ -11,9 +11,13 @@ interface DuckDbLoaderConfig {
 /** DuckDB Loader options - all parameters optional version of {@linkcode DuckDbLoaderConfig}. */
 export type DuckDbLoaderOptions = Partial<DuckDbLoaderConfig>;
 
-type Loader = (
+type DuckData = (
+  ...params: columnTypes[]
+) => Record<string, columnTypes>[];
+
+export type Loader = (
   path: string,
-) => Promise<(...params: columnTypes[]) => Record<string, columnTypes>[]>;
+) => Promise<DuckData>;
 
 /**
  * Factory which generates a DuckDb loader.
@@ -52,7 +56,12 @@ export function duckDbLoader(options: DuckDbLoaderOptions = {}): Loader {
   const loader = async (path: string) => {
     const query = new _internals.Query(db);
     await query.loadFile(path);
-    return (...params: columnTypes[]) => query.run(...params);
+    const runner = (...params: columnTypes[]) => query.run(...params);
+    runner.toString = () => {
+      console.warn("DuckDB query called as string, not function.");
+      return query.sql;
+    };
+    return runner;
   };
 
   return loader;
