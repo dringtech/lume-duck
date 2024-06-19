@@ -109,6 +109,7 @@ const fakePreparedStatement = {
   query<T = Record<string, unknown>>(..._params: unknown[]): T[] {
     return fakeResult as T[];
   },
+  close() {},
 };
 
 const fakeResult = [{ key: "value" }];

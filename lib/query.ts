@@ -1,21 +1,26 @@
-import type { Database } from "../deps/duckdb.ts";
+import type {
+  Connection,
+  Database,
+  PreparedStatement,
+} from "../deps/duckdb.ts";
 import type { columnTypes } from "./types.d.ts";
 
 /**
  * Class which manages loading SQL from strings or files and executing with params.
  */
 export class Query {
-  private db: Database;
-  private _sql: string | undefined;
+  #connection: Connection;
+  #prepared: PreparedStatement | undefined;
 
   /**
    * Create
    * @param db DuckDB database
    */
   constructor(db: Database) {
-    this.db = db;
+    this.#connection = db.connect();
     globalThis.addEventListener("unload", () => {
-      this.db.close();
+      if (this.#prepared) this.#prepared.close();
+      this.#connection.close();
     });
   }
 
@@ -23,7 +28,11 @@ export class Query {
    * Set query string
    */
   public set sql(sql: string) {
-    this._sql = sql;
+    if (this.#prepared) {
+      this.#prepared.close();
+      this.#prepared = undefined;
+    }
+    this.#prepared = this.#connection.prepare(sql);
   }
 
   /**
@@ -46,13 +55,8 @@ export class Query {
    * @returns Array of results
    */
   run<T = Record<string, columnTypes>>(...params: columnTypes[]) {
-    if (!this._sql) throw new ReferenceError("SQL statement not set");
-
-    const connection = this.db.connect();
-    const prepared = connection.prepare(this._sql);
-    const result = prepared.query(...params);
-    connection.close();
-    return result;
+    if (!this.#prepared) throw new ReferenceError("SQL statement not set");
+    return this.#prepared.query(...params);
   }
 }
 

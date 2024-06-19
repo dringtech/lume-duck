@@ -11,12 +11,13 @@ export type Database = {
   close(): void;
 };
 
-type Connection = {
+export type Connection = {
   query<T = Record<string, unknown>>(sql: string): T[];
   prepare(sql: string): PreparedStatement;
   close(): void;
 };
 
-type PreparedStatement = {
+export type PreparedStatement = {
   query<T = Record<string, columnTypes>>(...params: columnTypes[]): T[];
+  close(): void;
 };
