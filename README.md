@@ -2,13 +2,16 @@
 
 > [DuckDB](https://duckdb.org) data in [Lume](https://lume.land)
 
-You will need to have the appropriate DuckDB library installed for your system!
-See
-https://duckdb.org/docs/installation/index?version=stable&environment=cplusplus
+**NOTE** You will need to have the [appropriate DuckDB C/C++ library](https://duckdb.org/docs/installation/index) installed for your system!
+This module contains a provisioner which automates extracting to the current directory.
+
+```typescript
+deno run -A jsr:@dringtech/lume-duck/provisioner
+```
 
 ## Quick start
 
-Add the following lines to your Lume _config.ts file
+Add the following lines to your Lume `_config.ts` file
 
 ```ts
 import { duckDbLoader } from "jsr:@dringtech/lume-duck";

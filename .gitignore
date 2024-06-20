@@ -1,1 +1,6 @@
 coverage/
+
+# DuckDB libraries that might be downloaded here
+duckdb.dll
+libduckdb.dylib
+libduckdb.so
