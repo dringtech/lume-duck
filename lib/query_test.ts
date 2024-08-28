@@ -96,7 +96,12 @@ describe("Query", () => {
 
         // Run test
         query.sql = 'SELECT * FROM test;'
-        const res = query.run();
+        let res = query.run();
+        assertEquals(res[0].v, 1);
+        assertEquals(res[2].v, null);
+        
+        // Second time, it fails!
+        res = query.run();
         assertEquals(res[0].v, 1);
         assertEquals(res[2].v, null);
       })
