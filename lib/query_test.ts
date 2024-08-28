@@ -83,7 +83,26 @@ describe("Query", () => {
     //   const res = query.run({ n: "TEST", s: 4 });
     //   assertObjectMatch(res[0], { number: 4, string: "TEST" });
     // });
+
+    describe("issues", () => {
+      it("should return nulls (issue #1)", async () => {
+        // Set up test table
+        const conn = db.connect();
+        conn.query(`
+          CREATE TABLE test (v DOUBLE);
+          INSERT INTO test (v) VALUES (1), (2), (NULL);
+        `)
+        conn.close();
+
+        // Run test
+        query.sql = 'SELECT * FROM test;'
+        const res = query.run();
+        assertEquals(res[0].v, 1);
+        assertEquals(res[2].v, null);
+      })
+    })
   });
+
 });
 
 const fakeDb: Database = {
