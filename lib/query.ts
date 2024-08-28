@@ -29,12 +29,8 @@ export class Query {
    * Set query string
    */
   public set sql(sql: string) {
-    if (this.#prepared) {
-      this.#prepared.close();
-      this.#prepared = undefined;
-    }
     this.#sql = sql;
-    this.#prepared = this.#connection.prepare(this.#sql);
+    this.#prepare();
   }
 
   public get sql(): string {
@@ -42,6 +38,20 @@ export class Query {
       return "NO SQL LOADED";
     }
     return this.#sql;
+  }
+
+  /**
+   * Prepare the SQL statement
+   */
+  #prepare() {
+    if (!this.#sql) {
+      throw new ReferenceError('No SQL Provided');
+    }
+    if (this.#prepared) {
+      this.#prepared.close();
+      this.#prepared = undefined;
+    }
+    this.#prepared = this.#connection.prepare(this.#sql);
   }
 
   /**
@@ -64,6 +74,10 @@ export class Query {
    * @returns Array of results
    */
   run<T = Record<string, columnTypes>>(...params: columnTypes[]): T[] {
+    // TODO: Fix this workaround to what might be a caching issue.
+    // Running the same query twice leads to nulls being returned as zeroes second time only.
+    // I suspect this is a problem with the duckdbn bindings.
+    this.#prepare();
     if (!this.#prepared) throw new ReferenceError("SQL statement not set");
     return this.#prepared.query(...params);
   }
